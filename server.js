@@ -13,24 +13,32 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
+app.get("/api/:d?", (req, res) => {
+  let date;
+
+  if (req.params.d == undefined) date = new Date();
+  else if (isNaN(req.params.d)) date = new Date(req.params.d);
+  else if (!isNaN(req.params.d))
+    date = new Date(parseInt(req.params.d));
+
+  if (date == "Invalid Date") res.send({ error: "Invalid Date" });
+  else {
+    let unix = date.getTime();
+    let words = date.toString().split(" ");
+    let utc = words[0] + ", " + words[2] + " " + words[1] + date.toString().substr(10).split("+")[0];
+    res.send({ unix, utc });
+  }
+});
+
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
-
-app.get("/api/:d", (req, res) => {
-  let date = new Date(req.params.d);
-  if (date != null) date = new Date(parseInt(req.params.d));
-  
-  res.send({ unix: date.getTime(), utx: date });
-})
-
 
 
 // listen for requests :)
