@@ -24,6 +24,20 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api/:date", (req, res) => {
+  let date;
+
+  let ymd = req.params.date.split("-");
+  if (ymd.length > 1) {
+    for (let i = 0; i < 3; i++) ymd[i] = parseInt(ymd[i]);
+    date = new Date(ymd[0], ymd[1]-1, ymd[2]);
+  } else {
+    date = new Date(req.params.date[0]);
+  }
+  
+  res.send({ unix: date.getTime(), utx: date });
+})
+
 
 
 // listen for requests :)
